@@ -73,7 +73,7 @@ public class SpectrumAni implements Animation
 		// clear last area
 		noStroke();
 		fill(200);
-  		rect(10, height / 3, width - 20, 2 * height / 3);
+  		rect(10, height / 3, (2 * width / 3) - 20, 2 * height / 3);
 
 
 		stroke(255, 0, 0, 128);
@@ -82,7 +82,7 @@ public class SpectrumAni implements Animation
 	  	// so that we can see the lines better
 	  	for(int i = 0; i < mFft.specSize(); i++)
 	  	{
-	    	line(i + 10, height, i + 10, height - mFft.getBand(i) * 4);
+	    	line(i + 10, height, i + 10, max(height - mFft.getBand(i) * 4, height / 3));
 	  	}
 	}
 

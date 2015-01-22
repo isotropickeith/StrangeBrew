@@ -71,6 +71,8 @@ void draw ()
   mCurAnimation.update();
   //guitar.play();
   guitarInterface.updateDisplay();
+
+  printGuitar();   // On the computer screen
 }
 
 
@@ -187,4 +189,18 @@ void printScreenHelp()
   fill(0, 102, 153);
   text(s, width / 2, 10, (width / 2) - 10, height / 2);
 
+}
+
+void printGuitar()
+{
+  int string1x = 3 * width / 4;
+  int string1y = height - 10;
+
+  for(int j = 0; j < Guitar.sNumStrings; j++)
+  {
+    for(int i = 0; i < Guitar.sNumLedsPerString; i++)
+    {
+      set(string1x + (4 * j), string1y - (2 * i), guitar.getLed(j, i));
+    }
+  }
 }
