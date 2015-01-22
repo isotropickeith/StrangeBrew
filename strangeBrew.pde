@@ -21,6 +21,7 @@ ArrayList Drops;
 int bandsPerOctave = 24;
 int lowestFreq = 120;
 
+boolean noGuitar = true;
 
 Guitar guitar;
 Guitar2Serial guitarInterface;
@@ -38,11 +39,15 @@ boolean isUsingLineInput = true;
 // It's ok to add initialization etc
 void setup()
 {
-  size(480, 400);  // create the window
+  size(480, 800);  // create the window
   background(200);
 
   guitar = new Guitar();
-  guitarInterface = new Guitar2Serial(this, guitar);
+
+  if(!noGuitar)
+  {
+      guitarInterface = new Guitar2Serial(this, guitar);
+  }
 
   // Instantiate Animations
   mAnimations = new ArrayList<Animation>();
@@ -70,7 +75,10 @@ void draw ()
 {
   mCurAnimation.update();
   //guitar.play();
-  guitarInterface.updateDisplay();
+  if(!noGuitar)
+  {
+    guitarInterface.updateDisplay();
+  }
 
   printGuitar();   // On the computer screen
 }
@@ -195,12 +203,24 @@ void printGuitar()
 {
   int string1x = 3 * width / 4;
   int string1y = height - 10;
+  int ledYInterval = 4;
+  int ledXInterval = 8;
+  int boxX = string1x - 10;
+  int boxY = string1y - 10 - (Guitar.sNumLedsPerString * ledYInterval);
+  int ledSize = 3;
+
+  fill(0);
+  stroke(255, 0, 0);
+  rect(boxX, boxY, ledXInterval * Guitar.sNumStrings + 10, ledYInterval * Guitar.sNumLedsPerString + 20);
+
 
   for(int j = 0; j < Guitar.sNumStrings; j++)
   {
     for(int i = 0; i < Guitar.sNumLedsPerString; i++)
     {
-      set(string1x + (4 * j), string1y - (2 * i), guitar.getLed(j, i));
+      fill(guitar.getLed(j, i));
+      stroke(guitar.getLed(j, i));
+      ellipse(string1x + (ledXInterval * j), string1y - (ledYInterval * i), ledSize, ledSize);
     }
   }
 }

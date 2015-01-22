@@ -97,6 +97,25 @@ public class Guitar
 		mString[stringNum].setLed(intLedIdx, led);
 	}
 
+	public void setAll(color c)
+	{
+	  for(int j = 0; j < sNumStrings; j++)
+	  {
+	    for(int i = 0; i < sNumLedsPerString; i++)
+	    {
+	      setLed(j, i, c);
+	    }
+	  }
+	}
+
+	public void setString(int stringNum, color c)
+	{
+	    for(int i = 0; i < sNumLedsPerString; i++)
+	    {
+	      setLed(stringNum, i, c);
+	    }
+	}
+
 	private void playAnimation()
 	{
 		//setLed(5, 10, #00FF00);
