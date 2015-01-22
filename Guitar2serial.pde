@@ -72,7 +72,7 @@ public class Guitar2Serial
     delay(20);
     println("Serial Ports List:");
     println(list);
-    serialConfigure("/dev/tty.usbmodem414851");  // change these to your port names
+    serialConfigure("/dev/tty.usbmodem419751");  // change these to your port names
     //serialConfigure("/dev/ttyACM1");
     if (errorCount > 0) exit();
     for (int i=0; i < 256; i++) {
@@ -108,7 +108,13 @@ public class Guitar2Serial
     ledData[1] = (byte)(usec);   // request the frame sync pulse
     ledData[2] = (byte)(usec >> 8); // at 75% of the frame time
     // send the raw data to the LEDs  :-)
-    ledSerial[0].write(ledData); 
+    ledSerial[0].write(ledData);
+
+    // debug########
+    if(frameCount % 30 == 0)
+    {
+      dump(ledData);
+    }
   }
 
   // image2data converts the Guitar's pixels to OctoWS2811's raw data format.
@@ -116,24 +122,24 @@ public class Guitar2Serial
   void strings2data(byte[] data) {
     int offset = 3;
     int pixel[] = new int[8];
+    int mask;
 
-    for(int y = 0; y < Guitar.sNumLedsPerString; y++)
-    {
-      for(int x = 0; x < 8; x++)
-      {
-        if(x >= Guitar.sNumStrings)
-        {
-          pixel[x] = 0;  // Fill non-existant strings with zeros
-        }
-        else
-        {
-          pixel[x] = mGuitar.getLed(x, y);
-          pixel[x] = colorWiring(pixel[x]);
-        }
-        data[offset++] = byte(pixel[x] >> 16);  // G
-        data[offset++] = byte(pixel[x] >> 8);   // R
-        data[offset++] = byte(pixel[x]);        // B
+    for(int x = 0; x < Guitar.sNumLedsPerString; x++) { 
+      for(int y = 0; y < 6; y++) {
+        // fetch 8 pixels from the image, 1 for each pin
+        pixel[y] = mGuitar.getLed(y, x);
+        pixel[y] = colorWiring(pixel[y]);
       }
+      // now pixel[] has the 24 bit values of each string as index of the x LED
+      // so need to get 24 bits * 8 indexes to 8 bits * 24 indexes (offset marks index)
+
+        for (mask = 0x800000; mask != 0; mask >>= 1) {
+          byte b = 0;
+          for (int y = 0; y < 6; y++) {
+            if ((pixel[y] & mask) != 0) b |= (1 << y);
+          }
+          data[offset++] = b;
+        }
     }
   }
 
@@ -189,6 +195,7 @@ public class Guitar2Serial
     green = gammatable[green];
     blue = gammatable[blue];
     return (green << 16) | (red << 8) | (blue); // GRB - most common wiring
+    //return (red << 16) | (green << 8) | (blue); // GRB - most common wiring
   }
 
   // ask a Teensy board for its LED configuration, and set up the info for it.
@@ -301,4 +308,12 @@ public class Guitar2Serial
     if (percent ==  8) return 1.0 / 12.0;
     return (double)percent / 100.0;
   }
+
+  void dump(byte[] data)
+  {
+    println( data[0] + ", " + data[1] + ", " + data[2]);
+    println( data[3] + ", " + data[4] + ", " + data[5] + ", " + data[6] + ", " + data[7] + ", " + data[8] + ", " + data[9] + ", " + data[10]);
+  }
 }
+
+

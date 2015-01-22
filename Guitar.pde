@@ -99,7 +99,10 @@ public class Guitar
 
 	private void playAnimation()
 	{
-		if(frameCount % 10 == 0)
+		//setLed(5, 10, #00FF00);
+		
+		//if(frameCount % 10 == 0)
+		if(true)
 		{
 			setLed(curString, curLed, curColor);
 			if(++curLed == sNumLedsPerString)
