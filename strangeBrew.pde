@@ -9,6 +9,7 @@ Guitar2Serial guitarInterface;
 ArrayList<Animation> mAnimations;
 Animation mCurAnimation;
 
+int sFrameRate = 60;
 
 int curAnimationIdx = 0;
 
@@ -21,6 +22,7 @@ void setup()
 {
   size(480, 800);  // create the window
   background(200);
+  frameRate(sFrameRate);
 
   guitar = new Guitar();
 
