@@ -1,19 +1,7 @@
 
 
-/*  OctoWS2811 movie2serial.pde - Transmit video data to 1 or more
-      Teensy 3.0 boards running OctoWS2811 VideoDisplay.ino
-    http://www.pjrc.com/teensy/td_libs_OctoWS2811.html
-    Copyright (c) 2013 Paul Stoffregen, PJRC.COM, LLC
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
+/*  OctoWS2811 Guitar2serial.pde - Transmit six guitar strings to a
+      Teensy 3.1 board running OctoWS2811 StrangeBrew.ino
 
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,23 +12,7 @@
     THE SOFTWARE.
 */
 
-// To configure this program, edit the following sections:
-//
-//  1: change myMovie to open a video file of your choice    ;-)
-//
-//  2: edit the serialConfigure() lines in setup() for your
-//     serial device names (Mac, Linux) or COM ports (Windows)
-//
-//  3: if your LED strips have unusual color configuration,
-//     edit colorWiring().  Nearly all strips have GRB wiring,
-//     so normally you can leave this as-is.
-//
-//  4: if playing 50 or 60 Hz progressive video (or faster),
-//     edit framerate in movieEvent().
-
-//import processing.video.*;
 import processing.serial.*;
-//import java.awt.Rectangle;
 
 public class Guitar2Serial
 {
@@ -53,9 +25,6 @@ public class Guitar2Serial
   int maxPorts=1;  // maximum number of serial ports
 
   Serial[] ledSerial = new Serial[maxPorts];     // each port's actual Serial port
-  //Rectangle[] ledArea = new Rectangle[maxPorts]; // the area of the movie each port gets, in % (0-100)
-  //boolean[] ledLayout = new boolean[maxPorts];   // layout of rows, true = even is left->right
-  //PImage[] ledImage = new PImage[maxPorts];      // image sent to each port
   int[] gammatable = new int[256];
   int errorCount=0;
   float framerate=0;
@@ -72,14 +41,14 @@ public class Guitar2Serial
     delay(20);
     println("Serial Ports List:");
     println(list);
-    serialConfigure("/dev/tty.usbmodem419751");  // change these to your port names
-    //serialConfigure("/dev/ttyACM1");
+
+    //serialConfigure("/dev/tty.usbmodem419751");  // The real guitar
+    serialConfigure("/dev/tty.usbmodem414851");    // Keith's test Teensy3.1
+
     if (errorCount > 0) exit();
     for (int i=0; i < 256; i++) {
       gammatable[i] = (int)(pow((float)i / 255.0, gamma) * 255.0 + 0.5);
     }
-    //size(480, 400);  // create the window
-    //myMovie.loop();  // start the movie :-)
   }
 
  
@@ -89,15 +58,7 @@ public class Guitar2Serial
     //if (framerate == 0) framerate = m.getSourceFrameRate();
     framerate = 30.0; // TODO, how to read the frame rate???
     
-    //for (int i=0; i < numPorts; i++) {    
-      // copy a portion of the movie's image to the LED image
-      //int xoffset = percentage(m.width, ledArea[i].x);
-      //int yoffset = percentage(m.height, ledArea[i].y);
-      //int xwidth =  percentage(m.width, ledArea[i].width);
-      //int yheight = percentage(m.height, ledArea[i].height);
-      //ledImage[i].copy(m, xoffset, yoffset, xwidth, yheight,
-      //                 0, 0, ledImage[i].width, ledImage[i].height);
-      // convert the LED image to raw data
+    // convert the LED image to raw data
     byte[] ledData =  new byte[(8 * Guitar.sNumLedsPerString * 3) + 3];
 
 
@@ -107,14 +68,15 @@ public class Guitar2Serial
     int usec = (int)((1000000.0 / framerate) * 0.75);
     ledData[1] = (byte)(usec);   // request the frame sync pulse
     ledData[2] = (byte)(usec >> 8); // at 75% of the frame time
+
     // send the raw data to the LEDs  :-)
     ledSerial[0].write(ledData);
 
     // debug########
-    if(frameCount % 30 == 0)
-    {
-      dump(ledData);
-    }
+    //if(frameCount % 30 == 0)
+    //{
+    //  dump(ledData);
+    //}
   }
 
   // image2data converts the Guitar's pixels to OctoWS2811's raw data format.
@@ -143,50 +105,9 @@ public class Guitar2Serial
     }
   }
 
-  /********************************
-  // image2data converts an image to OctoWS2811's raw data format.
-  // The number of vertical pixels in the image must be a multiple
-  // of 8.  The data array must be the proper size for the image.
-  void image2data(PImage image, byte[] data, boolean layout) {
-    int offset = 3;
-    int x, y, xbegin, xend, xinc, mask;
-    int linesPerPin = image.height / 8;
-    int pixel[] = new int[8];
-    
-    for (y = 0; y < linesPerPin; y++) {
-      if ((y & 1) == (layout ? 0 : 1)) {
-        // even numbered rows are left to right
-        xbegin = 0;
-        xend = image.width;
-        xinc = 1;
-      } else {
-        // odd numbered rows are right to left
-        xbegin = image.width - 1;
-        xend = -1;
-        xinc = -1;
-      }
-      for (x = xbegin; x != xend; x += xinc) {
-        for (int i=0; i < 8; i++) {
-          // fetch 8 pixels from the image, 1 for each pin
-          pixel[i] = image.pixels[x + (y + linesPerPin * i) * image.width];
-          pixel[i] = colorWiring(pixel[i]);
-        }
-        // convert 8 pixels to 24 bytes
-        for (mask = 0x800000; mask != 0; mask >>= 1) {
-          byte b = 0;
-          for (int i=0; i < 8; i++) {
-            if ((pixel[i] & mask) != 0) b |= (1 << i);
-          }
-          data[offset++] = b;
-        }
-      }
-    } 
-  }
-  ********************************************/
-
   // translate the 24 bit color from RGB to the actual
   // order used by the LED wiring.  GRB is the most common.
-  int colorWiring(int c)
+  private int colorWiring(int c)
   {
     int red = (c & 0xFF0000) >> 16;
     int green = (c & 0x00FF00) >> 8;
@@ -194,8 +115,8 @@ public class Guitar2Serial
     red = gammatable[red];
     green = gammatable[green];
     blue = gammatable[blue];
-    return (green << 16) | (red << 8) | (blue); // GRB - most common wiring
-    //return (red << 16) | (green << 8) | (blue); // GRB - most common wiring
+    return (green << 16) | (red << 8) | (blue);   // GRB - most common wiring
+    //return (red << 16) | (green << 8) | (blue); // RGB wiring
   }
 
   // ask a Teensy board for its LED configuration, and set up the info for it.
@@ -230,11 +151,6 @@ public class Guitar2Serial
       errorCount++;
       return;
     }
-    // only store the info and increase numPorts if Teensy responds properly
-    //ledImage[numPorts] = new PImage(Integer.parseInt(param[0]), Integer.parseInt(param[1]), RGB);
-    //ledArea[numPorts] = new Rectangle(Integer.parseInt(param[5]), Integer.parseInt(param[6]),
-    //                   Integer.parseInt(param[7]), Integer.parseInt(param[8]));
-    //ledLayout[numPorts] = (Integer.parseInt(param[5]) == 0);
     numPorts++;
   }
 
@@ -309,7 +225,7 @@ public class Guitar2Serial
     return (double)percent / 100.0;
   }
 
-  void dump(byte[] data)
+  public void dump(byte[] data)
   {
     println( data[0] + ", " + data[1] + ", " + data[2]);
     println( data[3] + ", " + data[4] + ", " + data[5] + ", " + data[6] + ", " + data[7] + ", " + data[8] + ", " + data[9] + ", " + data[10]);
