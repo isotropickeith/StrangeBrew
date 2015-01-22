@@ -61,6 +61,7 @@ void setup()
   mCurAnimation.start(isUsingLineInput ? "LINE_IN" : "");
 
   printCurAnimation();
+  printLineInMode();
   printScreenHelp();
 }
 
@@ -114,6 +115,13 @@ void keyTyped()
   {
     printHelp();
   }
+  else if((key == 'l') || (key == 'L'))
+  {
+    isUsingLineInput = !isUsingLineInput;   // toggle Line Input Mode
+    mCurAnimation.stop();
+    mCurAnimation.start(isUsingLineInput ? "LINE_IN" : "");
+    printLineInMode();
+  }
   else
   {
     println();
@@ -131,6 +139,7 @@ void printHelp()
   {
     println(i + " : " + mAnimations.get(i).getName() + " animation");
   }
+  println("L : Toggle Line Input Mode");
   println("? : Print Help");
   println();
 }
@@ -149,6 +158,20 @@ void printCurAnimation()
   text(s, 10, 10, (width / 2) - 10, height / 15);
 }
 
+void printLineInMode()
+{
+  String s = new String("Line In : " + (isUsingLineInput ? "ENABLED" : "DISABLED"));
+  println(s);
+
+  // on screen :
+  fill(200);
+  noStroke();
+  textSize(14);
+  rect(10, 10 + (height / 15), (width / 2) - 10, 2 * height / 15);
+  fill(0, 102, 153);
+  text(s, 10, 10 + (height / 15), (width / 2) - 10, 2 * height / 15);
+}
+
 void printScreenHelp()
 {
   String s = new String("Animation Keys :\n");
@@ -156,6 +179,7 @@ void printScreenHelp()
   {
     s += (i + " : " + mAnimations.get(i).getName() + " animation\n");
   }
+  s += ("L : Toggle Line Input");
 
   textSize(14);
   textLeading(15);
