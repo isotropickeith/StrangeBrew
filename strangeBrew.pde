@@ -1,26 +1,6 @@
-PImage effectImage;
-PImage sourcePattern;
-import ddf.minim.analysis.*;
-import ddf.minim.*;
+// StrangeBrew
 
-
-// create global objects and variables
-Minim minim;
-//AudioInput in;
-AudioPlayer in;
-BeatDetect beat;
-FFT fft;
-int[] fftHold = new int[192];
-float[] fftSmooth = new float[192];
-
-ArrayList Drops;
-
-// 120,4 : 32
-//  60,4 : 64
-//  60,12 : 192
-int bandsPerOctave = 24;
-int lowestFreq = 120;
-
+// set noGuitar to true if no Teesy3.1 attached via serial
 boolean noGuitar = true;
 
 Guitar guitar;
