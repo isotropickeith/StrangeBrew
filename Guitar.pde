@@ -17,8 +17,7 @@ public class Guitar
 	public static final int sPickLed = 25;			// LED where string is picked
 	public static final int sNumFrets = 23;
 
-	public static final color sBackgroundColor = #020202;  //color when strings are idle
-
+	public static final color sBackgroundColor = #080808;  //color when strings are idle
 
 	public final int[] sFretLed = {	  -1,	 // Open sting, no LED
 									  139,   // 8  1st fret

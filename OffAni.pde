@@ -11,7 +11,7 @@ public class OffAni implements Animation
 	int mLedPosn;
 
 	final static color sBarColor = #0000FF;
-	final static color sOffColor = #202020;
+	final static color sOffColor = #202020;   // not used
 
 
 	OffAni(PApplet app,
@@ -48,7 +48,7 @@ public class OffAni implements Animation
 			{
 				for(int i = 0; i < Guitar.sNumStrings; i++)
 				{
-					mGuitar.setLed(i, mLedPosn, sOffColor);
+					mGuitar.setLed(i, mLedPosn, Guitar.sBackgroundColor);
 				}
 			}
 			mLedPosn--;

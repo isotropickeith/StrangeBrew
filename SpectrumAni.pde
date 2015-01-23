@@ -26,6 +26,7 @@ public class SpectrumAni implements Animation
 	Note[] mCurNotes = new Note[Guitar.sNumStrings];
 
 	final static int sBufferSize = 512;
+	final static float sDisplayAmplitudeThreshold = 0.25;
 
 
 	SpectrumAni(PApplet app,
@@ -130,43 +131,67 @@ public class SpectrumAni implements Animation
 	private void displayNote(GuitarString theString, Note note)
  	{
  		float amplitude = min(note.getAmplitude(), 1.0);  // limit amplitude
- 		int noteLed = theString.getLedIdx(note);
- 		int topLed = noteLed - 1;
- 		if(noteLed != -1)
+
+ 		if(amplitude < sDisplayAmplitudeThreshold)
  		{
- 			theString.setLed(noteLed, #FFFFFF);
+ 			//If amplitude is too low show string quiet and set noStrike
+ 			theString.setAllLeds(Guitar.sBackgroundColor);
+ 			theString.noStrike();
  		}
  		else
  		{
- 			topLed = Guitar.sNumLedsPerString - 1;
- 		}
- 		int ledCenter = Guitar.sBridgeStartLed + ((topLed - Guitar.sBridgeStartLed) / 2);
- 		colorMode(HSB, 360, 1.0, 1.0);
- 		color centerColor = color(0, 1.0, amplitude);  // Red
- 		color endColor = color(269, 1.0, amplitude);   // Violet
- 		float hueIncrement = (hue(endColor) - hue(centerColor)) / ((topLed - Guitar.sBridgeStartLed) / 2);
+ 			int noteLed = theString.getLedIdx(note);
+	 		int topLed = noteLed - 1;
+	 		colorMode(HSB, 360, 1.0, 1.0);
+	 		if(noteLed != -1)
+	 		{
+	 			theString.setLed(noteLed, color(297, 1.0, 1.0));
+	 		}
+	 		else
+	 		{
+	 			topLed = Guitar.sNumLedsPerString - 1;
+	 		}
+	 		int ledCenter = Guitar.sBridgeStartLed + ((topLed - Guitar.sBridgeStartLed) / 2);
+	 		//colorMode(HSB, 360, 1.0, 1.0);
+	 		color centerColor = color(0, 1.0, amplitude);  // Red
+	 		color endColor = color(269, 1.0, amplitude);   // Violet
+	 		float hueIncrement = (hue(endColor) - hue(centerColor)) / ((topLed - Guitar.sBridgeStartLed) / 2);
 
-  		//println("centerLed = " + centerLed);
-		theString.setLed(ledCenter, centerColor);
+	  		//println("centerLed = " + centerLed);
+			theString.setLed(ledCenter, centerColor);
 
- 		color curColor = centerColor;
- 		float curHue = hue(centerColor);
- 		for(int i = ledCenter + 1; i <= topLed; i++)
- 		{
- 			curHue += hueIncrement;
- 			curColor = color(curHue, saturation(centerColor), brightness(centerColor));
- 			//println("setLed#1 i = " + i);
- 			theString.setLed(i, curColor);
- 		}
- 		curColor = centerColor;
- 		curHue = hue(centerColor);
- 		for(int i = ledCenter - 1; i >= Guitar.sBridgeStartLed; i--)
- 		{
- 			curHue += hueIncrement;
- 			curColor = color(curHue, saturation(centerColor), brightness(centerColor));
- 			//println("setLed#2 i = " + i);
- 			theString.setLed(i, curColor);
- 		}
+	 		color curColor = centerColor;
+	 		float curHue = hue(centerColor);
+	 		for(int i = ledCenter + 1; i <= topLed; i++)
+	 		{
+	 			curHue += hueIncrement;
+	 			curColor = color(curHue, saturation(centerColor), brightness(centerColor));
+	 			//println("setLed#1 i = " + i);
+	 			theString.setLed(i, curColor);
+	 		}
+	 		curColor = centerColor;
+	 		curHue = hue(centerColor);
+	 		for(int i = ledCenter - 1; i >= Guitar.sBridgeStartLed; i--)
+	 		{
+	 			curHue += hueIncrement;
+	 			curColor = color(curHue, saturation(centerColor), brightness(centerColor));
+	 			//println("setLed#2 i = " + i);
+	 			theString.setLed(i, curColor);
+	 		}
+
+	 		// display a strike if detected
+	 		if(theString.strike() == false)  // if no strike last frame...
+	 		{
+	 			theString.setLed(Guitar.sPickLed, color(51, 36, 100));
+	 			theString.setLed(Guitar.sPickLed + 1, color(51, 69, 15));
+	 			theString.setLed(Guitar.sPickLed - 1, color(51, 69, 15));
+	 			//theString.setLed(Guitar.sPickLed + 2, color(51, 100, 100));
+	 			//theString.setLed(Guitar.sPickLed - 2, color(51, 100, 100));
+	 		}
+
+	 		// restore colorMode
+	 		colorMode(RGB, 255);
+	 	}
 	}
 
 	private void displaySpectrum()
