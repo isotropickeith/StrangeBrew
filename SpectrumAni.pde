@@ -66,6 +66,7 @@ public class SpectrumAni implements Animation
 		{
 			mSource = mMinim.loadFile(mCurSong, sBufferSize);
 			((AudioPlayer)mSource).play();
+			((AudioPlayer)mSource).loop();
 		}
 
 		mAudioProcess = new AudioProcessing(mSource.bufferSize(), mSource.sampleRate());
