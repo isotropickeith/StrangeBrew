@@ -1,7 +1,7 @@
 // StrangeBrew
 
 // set noGuitar to true if no Teesy3.1 attached via serial
-boolean noGuitar = true;
+boolean noGuitar = true;  //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LIVE!!!@!!
 
 Guitar guitar;
 Guitar2Serial guitarInterface;
