@@ -146,10 +146,23 @@ public class SpectrumAni implements Animation
 	  	// so that we can see the lines better
 	  	for(int i = 0; i < mAudioProcess.getSpecSize(); i++)
 	  	{
+	  		// dbg: adding colors to find EQ for adjustAmplitude
+	  		if (i > 100) {
+	  			stroke(255,0,0,128);
+	  		}
+	  		else if (i > 75) {
+	  			stroke(0,255,0,128);
+	  		}
+	  		else if (i > 50) {
+				stroke(255,0,0,128);
+	  		}
+	  		else if (i > 25) {
+				stroke(0,255,0,128);
+	  		}
 	    	line(i + 10,
 	    		 height,
 	    		 i + 10,
-	    		 max(height - mAudioProcess.getBandAmplitude(i) * 4, height / 3));
+	    		 max(height - mAudioProcess.getBandAmplitude(i) * 512, height / 3));
 	  	}
 	}
 }

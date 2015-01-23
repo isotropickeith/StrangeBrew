@@ -12,6 +12,10 @@ public class AudioProcessing
     mFft = new FFT(timeSize, sampleRate);
     mFft.window(FFT.GAUSS);
     mFft.logAverages(55,12); // ?? bands
+
+    minAmplitude =  1000;
+    maxAmplitude = -1000;
+
     println("AudioProcessing");
   }
 
@@ -30,7 +34,7 @@ public class AudioProcessing
   public float getBandAmplitude(int band)
   {
     //println("AudioProcessing: getBandAmplitude");
-    return mFft.getBand(band);
+    return adjustAmplitude(mFft.getBand(band), band);
   }
 
   public Note getNote(GuitarString theString)
@@ -40,8 +44,14 @@ public class AudioProcessing
     float noteAmplitude;
     float amplitude;
 
-    println("AudioProcessing: getNote: " + theString.getLowNote() + ", " + theString.getHighNote());
+    //println("AudioProcessing: getNote: " + theString.getLowNote() + ", " + theString.getHighNote());
     // FIXME: ric: here
+    // amplitude to be 0 to 1.0, nominally, may overflow
+    // internally want dB scale, then EQ
+    // new internal method to adjustAmplitude with constants
+    // max sig ~0dB, ignore below ~-60, or maybe -40
+    // Heavy Duty max is ~75.5dB, min is -infinity, 1st point
+    // 
     // search through FFT data from low to hi note for highest peak
     loudestNote   = 0;
     noteAmplitude = 0;
@@ -53,7 +63,8 @@ public class AudioProcessing
           println("i > mFft.avgSize()");
         break;
       }
-      amplitude = mFft.getAvg(i);
+      amplitude = adjustAmplitude(mFft.getAvg(i),i);
+
       //println(" i = " + i + ", amplitude = " + amplitude);
       if (amplitude > noteAmplitude) {
         noteAmplitude = amplitude;
@@ -61,9 +72,88 @@ public class AudioProcessing
       }
     }
     Note note = new Note(loudestNote, noteAmplitude);
-    println("note= " + loudestNote + ", " + noteAmplitude);
+    //println("note= " + loudestNote + ", " + noteAmplitude);
 
     return note;
+  }
+
+  private float minAmplitude;
+  private float maxAmplitude;
+
+  private float adjustAmplitude(float amplitudeIn, int i) {
+    float amplitudeOut;
+
+    //amplitudeOut = amplitudeIn;
+
+    amplitudeOut = 20*log(amplitudeIn);
+    amplitudeOut = eqAmplitude(amplitudeOut, i);
+
+    if (amplitudeOut > maxAmplitude) {
+      maxAmplitude = amplitudeOut;
+      println("maxAmplitude= " + maxAmplitude);
+    }
+    if (amplitudeOut < minAmplitude) {
+      minAmplitude = amplitudeOut;
+      println("minAmplitude= " + minAmplitude);
+    }
+
+    amplitudeOut -= 20; // offset and scale
+    amplitudeOut /= 60; // 80 to 20 dB maps to 1 to 0
+
+    // limit underflow, but allow overflow
+    if (amplitudeOut < 0) amplitudeOut = 0;
+    if (amplitudeOut > 1) {
+      println("AudioProcessing: adjustAmplitude: overflow!");
+    }
+
+    if (amplitudeOut > maxAmplitude) {
+      maxAmplitude = amplitudeOut;
+      println("maxAmplitude= " + maxAmplitude);
+    }
+    if (amplitudeOut < minAmplitude) {
+      minAmplitude = amplitudeOut;
+      println("minAmplitude= " + minAmplitude);
+    }
+    
+    return amplitudeOut;
+  }
+
+  private float eqAmplitude(float amplitudeIn, int i) {
+    float amplitudeOut;
+
+    amplitudeOut = amplitudeIn;
+
+    if (i > 75) {
+      amplitudeOut += 20;
+    } 
+    else if (i > 70) {
+      // ramp up from +10 to +20
+      amplitudeOut += 10;
+      amplitudeOut += 10*(i-70)/5;
+    } 
+    else if (i > 35) {
+      amplitudeOut += 10;
+    } 
+    else if (i > 30) {
+      // ramp up from 0 to +10
+      amplitudeOut += 0;
+      amplitudeOut += 10*(i-30)/5;
+
+    } 
+    else if (i > 10) {
+      // no change.
+    } 
+    else if (i > 7)  {
+      // ramp up from -20 to 0
+      amplitudeOut += -20;
+      amplitudeOut += 20*(i-7)/3;
+
+    } 
+    else {
+      amplitudeOut -= 20;
+    }
+
+    return amplitudeOut;
   }
 }
 
