@@ -10,11 +10,15 @@ public class AudioProcessing
   AudioProcessing(int timeSize, float sampleRate)
   {
     mFft = new FFT(timeSize, sampleRate);
+     fft.window(FFT.GAUSS);
+     fft.logAverages(55,12); // ?? bands
+     println("AudioProcessing");
   }
 
   public void sample(AudioBuffer buffer)
   {
     mFft.forward(buffer);
+    println("AudioProcessing: sample");
   }
 
   public int getSpecSize()
@@ -29,14 +33,34 @@ public class AudioProcessing
 
   public Note getNote(GuitarString theString)
   {
-    //////////////////// placeholder //////////////////////////////////
-    Note note = new Note(theString.getHighNote(), 0.0);  //!!! REPLACE with real stuff
+    int   loudestNote;
+    int   noteOffset;
+    float noteAmplitude;
+    float amplitude;
+
+    println("AudioProcessing: getNote");
+    // FIXME: ric: here
+    // search through FFT data from low to hi note for highest peak
+    loudestNote   = 0;
+    noteAmplitude = 0;
+
+    for (i = theString.getLowNote; i <= theString.getHighNote; i++) {
+      if (i > mFft.avgSize()) {
+          println("i > mFft.avgSize()");
+        break;
+      }
+      amplitude = mFft.getAvg(i);
+      if (amplitude > noteAmplitude) {
+        noteAmplitude = amplitude;
+        loudestNote   = i;
+      }
+    }
+    Note note = new Note(loudestNote, noteAmplitude);
+    println("note= " + loudestNote + ", " + noteAmplitude);
 
     return note;
   }
 }
-
-
 
 /*
 PImage effectImage;
