@@ -45,12 +45,12 @@ public class AudioProcessing
     float amplitude;
 
     //println("AudioProcessing: getNote: " + theString.getLowNote() + ", " + theString.getHighNote());
-    // FIXME: ric: here
+
     // amplitude to be 0 to 1.0, nominally, may overflow
     // internally want dB scale, then EQ
-    // new internal method to adjustAmplitude with constants
-    // max sig ~0dB, ignore below ~-60, or maybe -40
-    // Heavy Duty max is ~75.5dB, min is -infinity, 1st point
+    // private method to adjustAmplitude with constants
+    // private method to EQ amplitude
+    // Heavy Duty max is 79.2dB, min is -infinity at 1st point
     // 
     // search through FFT data from low to hi note for highest peak
     loudestNote   = 0;
