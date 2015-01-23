@@ -11,7 +11,7 @@ public class OffAni implements Animation
 	int mLedPosn;
 
 	final static color sBarColor = #0000FF;
-	final static color sOffColor = #808080;
+	final static color sOffColor = #202020;
 
 
 	OffAni(PApplet app,

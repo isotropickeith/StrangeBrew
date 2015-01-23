@@ -66,8 +66,6 @@ void draw ()
 }
 
 
-
-
 void stop()
 {
   // always close Minim audio classes when you are finished with them
@@ -83,7 +81,10 @@ void stop()
 // respond to mouse clicks as pause/play
 void mousePressed()
 {
-  guitarInterface.getStatus();
+  if(!noGuitar)
+  {
+    guitarInterface.getStatus();
+  }
 }
 
 // respond to key press commands

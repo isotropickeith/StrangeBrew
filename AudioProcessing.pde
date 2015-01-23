@@ -1,3 +1,43 @@
+// AudioProcessing
+
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+
+public class AudioProcessing
+{
+  FFT mFft;
+
+  AudioProcessing(int timeSize, float sampleRate)
+  {
+    mFft = new FFT(timeSize, sampleRate);
+  }
+
+  public void sample(AudioBuffer buffer)
+  {
+    mFft.forward(buffer);
+  }
+
+  public int getSpecSize()
+  {
+    return mFft.specSize();
+  }
+
+  public float getBandAmplitude(int band)
+  {
+    return mFft.getBand(band);
+  }
+
+  public Note getNote(GuitarString theString)
+  {
+    //////////////////// placeholder //////////////////////////////////
+    Note note = new Note(theString.getHighNote(), 0.0);  //!!! REPLACE with real stuff
+
+    return note;
+  }
+}
+
+
+
 /*
 PImage effectImage;
 PImage sourcePattern;

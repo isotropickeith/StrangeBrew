@@ -42,8 +42,8 @@ public class Guitar2Serial
     println("Serial Ports List:");
     println(list);
 
-    //serialConfigure("/dev/tty.usbmodem419751");  // The real guitar
-    serialConfigure("/dev/tty.usbmodem414851");    // Keith's test Teensy3.1
+    serialConfigure("/dev/tty.usbmodem419751");  // The real guitar
+    //serialConfigure("/dev/tty.usbmodem414851");    // Keith's test Teensy3.1
 
     if (errorCount > 0) exit();
     for (int i=0; i < 256; i++) {

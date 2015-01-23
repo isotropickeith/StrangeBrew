@@ -5,6 +5,7 @@ public class GuitarString
 
 	Guitar mGuitar;
 	int mOpenNote;
+	int mHighNote;
 	color[] mLeds = new color[Guitar.sNumLedsPerString];
 
 	GuitarString(Guitar guitar,
@@ -12,6 +13,7 @@ public class GuitarString
 	{
 		mGuitar = guitar;
 		mOpenNote = openNote;
+		mHighNote = mOpenNote + Guitar.sNumFrets;
 
 		for(color c : mLeds) {c = 0;}
 
@@ -30,5 +32,15 @@ public class GuitarString
 	public void setLed(int idx, color led)
 	{
 		mLeds[idx] = led;
+	}
+
+	public int getLowNote()
+	{
+		return mOpenNote;
+	}
+
+	public int getHighNote()
+	{
+		return mHighNote;
 	}
 }

@@ -4,12 +4,12 @@
 
 public class Guitar
 {
-	public static final int sLowE = 82;			// Hz
-	public static final int sLowA = 110;		// Hz
-	public static final int sLowD = 147;		// Hz
-	public static final int sLowG = 196;		// Hz
-	public static final int sLowB = 247;		// Hz
-	public static final int sHiE  = 330;		// Hz
+	public static final int sLowE = 7;			// Index
+	public static final int sLowA = 12;		
+	public static final int sLowD = 17;
+	public static final int sLowG = 22;
+	public static final int sLowB = 26;
+	public static final int sHiE  = 31;
 
 	public static final int sNumLedsPerString = 147;
 	public static final int sNumStrings = 6;
@@ -72,6 +72,18 @@ public class Guitar
 		}
 
 		playAnimation();   //### Test Animation
+	}
+
+	public GuitarString getString(int idx)
+	{
+		if(idx < mString.length)
+		{
+			return mString[idx];
+		}
+		else 
+		{
+			return null;
+		}
 	}
 	// getLeds returns an array of Colors organized as follows:
 
