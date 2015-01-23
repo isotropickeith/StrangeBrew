@@ -14,24 +14,26 @@ public class Guitar
 	public static final int sNumLedsPerString = 147;
 	public static final int sNumStrings = 6;
 	public static final int sBridgeStartLed = 6;
+	public static final int sPickLed = 25;			// LED where string is picked
 	public static final int sNumFrets = 23;
 
 	public static final color sBackgroundColor = #020202;  //color when strings are idle
 
 
-	public final int[] sFretLed = {	  139,   // 8  1st fret
+	public final int[] sFretLed = {	  -1,	 // Open sting, no LED
+									  139,   // 8  1st fret
 									  132,   // 7
 									  125,
 									  118,	 // 7
 									  112,   // 6
-									  106,
+									  104,
 									  100,   // 6
 									  95,    // 5
 									  90,    // 5
 									  85,    // 5
 									  81,    // 4
-									  77,
-									  73,    // 12th fret (octave)
+									  77,	 // 12th fret (octave)
+									  73,    
 									  69,
 									  65,    // 4
 									  62,    // 3
@@ -39,7 +41,7 @@ public class Guitar
 									  56,
 									  53,
 									  50,    // 3
-									  48,    // 2
+									  49,    // 2
 									  46,
 									  44 };	 // 2 23rd fret
 
@@ -133,7 +135,14 @@ public class Guitar
 
 	public int getFretLed(int fret)
 	{
-		return sFretLed[fret];
+		if(fret < sFretLed.length)
+		{
+			return sFretLed[fret];
+		}
+		else
+		{
+			return -1;
+		}
 	}
 
 
