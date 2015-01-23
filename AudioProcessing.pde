@@ -127,17 +127,17 @@ public class AudioProcessing
       amplitudeOut += 20;
     } 
     else if (i > 70) {
-      // ramp up from +10 to +20
-      amplitudeOut += 10;
+      // ramp up from +20 to +30
+      amplitudeOut += 20;
       amplitudeOut += 10*(i-70)/5;
     } 
     else if (i > 35) {
       amplitudeOut += 10;
     } 
     else if (i > 30) {
-      // ramp up from 0 to +10
+      // ramp up from 0 to +20
       amplitudeOut += 0;
-      amplitudeOut += 10*(i-30)/5;
+      amplitudeOut += 20*(i-30)/5;
 
     } 
     else if (i > 10) {
