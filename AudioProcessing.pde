@@ -10,24 +10,26 @@ public class AudioProcessing
   AudioProcessing(int timeSize, float sampleRate)
   {
     mFft = new FFT(timeSize, sampleRate);
-     fft.window(FFT.GAUSS);
-     fft.logAverages(55,12); // ?? bands
-     println("AudioProcessing");
+    mFft.window(FFT.GAUSS);
+    mFft.logAverages(55,12); // ?? bands
+    println("AudioProcessing");
   }
 
   public void sample(AudioBuffer buffer)
   {
     mFft.forward(buffer);
-    println("AudioProcessing: sample");
+    //println("AudioProcessing: sample");
   }
 
   public int getSpecSize()
   {
+    //println("AudioProcessing: getSpecize");
     return mFft.specSize();
   }
 
   public float getBandAmplitude(int band)
   {
+    //println("AudioProcessing: getBandAmplitude");
     return mFft.getBand(band);
   }
 
@@ -38,18 +40,21 @@ public class AudioProcessing
     float noteAmplitude;
     float amplitude;
 
-    println("AudioProcessing: getNote");
+    println("AudioProcessing: getNote: " + theString.getLowNote() + ", " + theString.getHighNote());
     // FIXME: ric: here
     // search through FFT data from low to hi note for highest peak
     loudestNote   = 0;
     noteAmplitude = 0;
 
-    for (i = theString.getLowNote; i <= theString.getHighNote; i++) {
+    //println(" mFft.avgSize() = " + mFft.avgSize());
+
+    for (int i = theString.getLowNote(); i <= theString.getHighNote(); i++) {
       if (i > mFft.avgSize()) {
           println("i > mFft.avgSize()");
         break;
       }
       amplitude = mFft.getAvg(i);
+      //println(" i = " + i + ", amplitude = " + amplitude);
       if (amplitude > noteAmplitude) {
         noteAmplitude = amplitude;
         loudestNote   = i;
