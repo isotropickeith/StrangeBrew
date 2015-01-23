@@ -43,4 +43,31 @@ public class GuitarString
 	{
 		return mHighNote;
 	}
+
+	public int getFret(Note note)
+	{
+		int fret = note.getIdx() - mOpenNote;
+		if((fret < 0) || (fret >= mGuitar.sNumFrets))
+		{
+			return -1;
+		}
+		else
+		{
+			return fret;
+		}
+	}
+
+	public int getLedIdx(Note note)
+	{
+		int fret = getFret(note);
+		if(fret == -1)
+		{
+			return -1;
+		}
+		else
+		{
+			return mGuitar.getFretLed(fret);
+		}
+	}
+
 }

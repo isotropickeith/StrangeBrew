@@ -16,6 +16,9 @@ public class Guitar
 	public static final int sBridgeStartLed = 6;
 	public static final int sNumFrets = 23;
 
+	public static final color sBackgroundColor = #020202;  //color when strings are idle
+
+
 	public final int[] sFretLed = {	  139,   // 8  1st fret
 									  132,   // 7
 									  125,
@@ -127,6 +130,12 @@ public class Guitar
 	      setLed(stringNum, i, c);
 	    }
 	}
+
+	public int getFretLed(int fret)
+	{
+		return sFretLed[fret];
+	}
+
 
 	private void playAnimation()
 	{

@@ -73,6 +73,7 @@ public class SpectrumAni implements Animation
 
 	public void update()
 	{
+		mGuitar.setAll(Guitar.sBackgroundColor);
 		if(mAudioProcess != null)
 		{
 			mAudioProcess.sample(mSource.mix);
@@ -80,7 +81,7 @@ public class SpectrumAni implements Animation
 			for(int stringNum = 0; stringNum < Guitar.sNumStrings; stringNum++)
 			{
 				GuitarString curString = mGuitar.getString(stringNum);
-				Note curNote = mAudioProcess.getNote(curString);
+				Note curNote = mAudioProcess.getNote(curString); // This will be 0.0 - 1.0 (mostly)
 				mCurNotes[stringNum] = curNote;
 
 				// display the note on the GuitarString
@@ -128,8 +129,17 @@ public class SpectrumAni implements Animation
 	// display the note on the GuitarString
 	private void displayNote(GuitarString theString, Note note)
  	{
- 		// TODO!!!!!!!!!!!!!!
-		//theString.setLed(???);
+ 		int noteLed = theString.getLedIdx(note);
+ 		if(noteLed != -1)
+ 		{
+ 			theString.setLed(noteLed, #FFFFFF);
+
+ 			//////////////////////////////////
+ 			//
+ 			//    Much to do here in display
+ 			//
+ 			//////////////////////////////////
+ 		}
 	}
 
 	private void displaySpectrum()
