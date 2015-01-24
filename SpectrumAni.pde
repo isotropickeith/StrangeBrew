@@ -21,9 +21,15 @@ public class SpectrumAni implements Animation
 
 	boolean mIsLineIn;
 
+	boolean mIsRollingHue;
+
 	AudioProcessing mAudioProcess;
 
 	Note[] mCurNotes = new Note[Guitar.sNumStrings];
+
+	float mRollingHue;
+	final static int sRollingHuePeriod = 15 * 60 * sFrameRate; // 15 minutes to roll thruogh the hues
+	final static float sRollingHueIncrement = 360.0 / sRollingHuePeriod;  // hue increment each frame
 
 	final static int sBufferSize = 512;
 	final static float sDisplayAmplitudeThreshold = 0.25;
@@ -40,6 +46,9 @@ public class SpectrumAni implements Animation
 		mName = new String("Spectrum");
 
 		mIsLineIn  = false;
+
+		mIsRollingHue = false;
+		mRollingHue = 0;
 
 		mSongs = new ArrayList<String>();
 
@@ -71,10 +80,14 @@ public class SpectrumAni implements Animation
 
 		mAudioProcess = new AudioProcessing(mSource.bufferSize(), mSource.sampleRate());
 		// mFft = new FFT(mSource.bufferSize(), mSource.sampleRate());
+
+		mIsRollingHue = isRollingHueOn();
 	}
 
 	public void update()
 	{
+		mRollingHue = (mRollingHue + sRollingHueIncrement) % 360.0;
+
 		mGuitar.setAll(Guitar.sBackgroundColor);
 		if(mAudioProcess != null)
 		{
@@ -123,6 +136,17 @@ public class SpectrumAni implements Animation
 		}
 	}
 
+	public void setRollingHueOn()
+	{
+		mIsRollingHue = true;
+	}
+
+	public void setRollingHueOff()
+	{
+		mIsRollingHue = false;
+	}
+
+
 	public String getName()
 	{
 		return mName;
@@ -146,7 +170,7 @@ public class SpectrumAni implements Animation
 	 		colorMode(HSB, 360, 1.0, 1.0);
 	 		if(noteLed != -1)
 	 		{
-	 			theString.setLed(noteLed, color(297, 1.0, 1.0));
+	 			theString.setLed(noteLed, color(getAdjustedHue(297), 1.0, 1.0));
 	 		}
 	 		else
 	 		{
@@ -154,8 +178,8 @@ public class SpectrumAni implements Animation
 	 		}
 	 		int ledCenter = Guitar.sBridgeStartLed + ((topLed - Guitar.sBridgeStartLed) / 2);
 	 		//colorMode(HSB, 360, 1.0, 1.0);
-	 		color centerColor = color(0, 1.0, amplitude);  // Red
-	 		color endColor = color(269, 1.0, amplitude);   // Violet
+	 		color centerColor = color(getAdjustedHue(0), 1.0, amplitude);  // Red
+	 		color endColor = color(getAdjustedHue(269), 1.0, amplitude);   // Violet
 	 		float hueIncrement = (hue(endColor) - hue(centerColor)) / ((topLed - Guitar.sBridgeStartLed) / 2);
 
 	  		//println("centerLed = " + centerLed);
@@ -193,6 +217,16 @@ public class SpectrumAni implements Animation
 	 		// restore colorMode
 	 		colorMode(RGB, 255);
 	 	}
+	}
+
+	private float getAdjustedHue(float hueIn)
+	{
+		float hueOut = hueIn;
+		if(mIsRollingHue)
+		{
+			hueOut = (hueOut + mRollingHue) % 360.0;
+		}
+		return hueOut;
 	}
 
 	private void displaySpectrum()

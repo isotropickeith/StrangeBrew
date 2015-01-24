@@ -9,12 +9,15 @@ Guitar2Serial guitarInterface;
 ArrayList<Animation> mAnimations;
 Animation mCurAnimation;
 
-int sFrameRate = 60;
+final static int sFrameRate = 60;
 
 int curAnimationIdx = 0;
 
 // set to true if wanting to use line audio as source
 boolean isUsingLineInput = true;
+
+// setot true to enable use of a rolling hue base
+boolean isUsingRollingHue = false;
 
 // Please don't modify or remove anything in here
 // It's ok to add initialization etc
@@ -48,7 +51,7 @@ void setup()
   mCurAnimation.start(isUsingLineInput ? "LINE_IN" : "");
 
   printCurAnimation();
-  printLineInMode();
+  printModes();
   printScreenHelp();
 }
 
@@ -75,6 +78,11 @@ void stop()
   //minim.stop();
   // this closes the sketch
   super.stop();
+}
+
+boolean isRollingHueOn()
+{
+  return isUsingRollingHue;
 }
 
 
@@ -113,7 +121,14 @@ void keyTyped()
     isUsingLineInput = !isUsingLineInput;   // toggle Line Input Mode
     mCurAnimation.stop();
     mCurAnimation.start(isUsingLineInput ? "LINE_IN" : "");
-    printLineInMode();
+    printModes();
+  }
+  else if((key == 'h') || (key == 'H'))
+  {
+    isUsingRollingHue = !isUsingRollingHue;   // toggle Rolling Hue Mode
+    mCurAnimation.stop();
+    mCurAnimation.start(isUsingLineInput ? "LINE_IN" : "");
+    printModes();
   }
   else
   {
@@ -151,9 +166,10 @@ void printCurAnimation()
   text(s, 10, 10, (width / 2) - 10, height / 15);
 }
 
-void printLineInMode()
+void printModes()
 {
-  String s = new String("Line In : " + (isUsingLineInput ? "ENABLED" : "DISABLED"));
+  String s = new String("Line In : " + (isUsingLineInput ? "ENABLED" : "DISABLED") +
+                        "\n Rolling Hue : " + (isUsingRollingHue ? "ENABLED" : "DISABLED"));
   println(s);
 
   // on screen :
@@ -173,6 +189,7 @@ void printScreenHelp()
     s += (i + " : " + mAnimations.get(i).getName() + " animation\n");
   }
   s += ("L : Toggle Line Input");
+  s += ("\nH : Toggle Rolling Hue");
 
   textSize(14);
   textLeading(15);
